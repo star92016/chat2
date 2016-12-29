@@ -1,10 +1,15 @@
 package cn.starnine.chat;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener,IHttpGetListener{
     EditText user;
@@ -27,12 +32,33 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         String username=null,password=null;
         username=user.getText().toString().trim();
         password=pass.getText().toString().trim();
-        new HttpData("http://115.159.90.206:8088/login.php?user="+username+"&pass="+password,this).execute();
+        new HttpData("http://115.159.90.206:8088/m/register.php?user="+username+"&pass="+password,this).execute();
 
     }
+    Toast toast;
 
+    public void toast(String s) {
+        if (toast == null)
+            toast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
+        else
+            toast.setText(s);
+        toast.show();
+    }
     @Override
     public void getDataUrl(String data) {
+        try {
+            JSONObject jb = new JSONObject(data);
+            String state=jb.getString("state");
+            if(state.equals("ok")){
+                toast("注册成功");
+                this.finish();
 
+            }else{
+                toast("注册失败");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            toast("注册失败");
+        }
     }
 }
